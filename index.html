@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>辅导员模拟器：大学辅导员生存指南</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div id="startScreen" class="start-screen">
+      <div class="start-card">
+        <div id="startStep1" class="start-step">
+          <p class="eyebrow">文字经营 / 生存模拟</p>
+          <h1>辅导员模拟器</h1>
+          <p class="start-subtitle">大学辅导员生存指南</p>
+          <p id="introText" class="intro-text"></p>
+          <div class="start-actions">
+            <button id="startGameButton" class="primary-button">开始游戏</button>
+            <button id="continueGameButton" class="secondary-button" hidden>继续游戏</button>
+          </div>
+        </div>
+
+        <div id="startStep2" class="start-step hidden">
+          <p class="eyebrow">建立你的辅导员档案</p>
+          <h2>你的名字</h2>
+          <div class="name-field">
+            <label for="counselorNameInput">辅导员姓名</label>
+            <div class="name-control">
+              <input id="counselorNameInput" maxlength="8" value="林知远" autocomplete="off" />
+              <button id="randomNameButton" class="secondary-button" type="button">随机</button>
+            </div>
+          </div>
+          <div class="start-actions">
+            <button id="confirmNameButton" class="primary-button">开始工作</button>
+            <button id="backToStartButton" class="ghost-button">返回</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">大学辅导员生存指南</p>
+          <h1>辅导员模拟器</h1>
+          <p id="planHint" class="top-plan-hint">请完成工作、学生和发展三个模块。</p>
+        </div>
+        <div class="period-box">
+          <span id="semesterLabel">第 1 学期</span>
+          <span id="monthLabel">第 1 月</span>
+          <span id="weekLabel">第 1 周</span>
+        </div>
+        <div class="top-actions">
+          <button id="startMonthButton" class="primary-button top-start-button">进入本月</button>
+          <button id="tutorialButton" class="ghost-button">入职培训</button>
+          <button id="saveButton" class="ghost-button">保存搬砖进度</button>
+          <button id="resetButton" class="ghost-button">重生之王者归来</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="panel counselor-panel" aria-label="辅导员状态">
+          <div class="panel-title">
+            <span>辅导员</span>
+            <button id="toggleProfile" class="icon-button" aria-label="收起档案">−</button>
+          </div>
+          <div id="counselorProfile">
+            <div class="profile-head">
+              <div class="avatar" id="counselorAvatar">导</div>
+              <div>
+                <p id="counselorName">林知远</p>
+                <p id="counselorStatus">状态：正常</p>
+              </div>
+            </div>
+            <div class="stat-list" id="counselorStats"></div>
+            <div class="relation-list" id="relationStats"></div>
+            <div class="slack-box">
+              <div class="slack-head">
+                <span>摸鱼</span>
+                <span id="slackRemaining">2 / 2</span>
+              </div>
+              <div class="slack-actions" id="slackActions"></div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel main-panel" aria-label="主要操作区">
+          <nav class="tabs" aria-label="功能模块">
+            <button class="tab-button active" data-tab="work">工作</button>
+            <button class="tab-button" data-tab="student">学生</button>
+            <button class="tab-button" data-tab="develop">发展</button>
+          </nav>
+
+          <section class="tab-panel active" id="workTab">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">本月计划</p>
+                <h2>选择重点工作</h2>
+              </div>
+              <span id="actionCount">已选 0 / 3</span>
+            </div>
+            <div class="month-brief" id="monthBrief"></div>
+            <div class="action-grid" id="actionGrid"></div>
+          </section>
+
+          <section class="tab-panel" id="studentTab">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">重点学生</p>
+                <h2>本周期问题学生</h2>
+              </div>
+            </div>
+            <div class="focus-students" id="problemStudents"></div>
+            <div class="roster-table-wrap">
+              <table class="roster-table">
+                <thead>
+                  <tr>
+                    <th>学生</th>
+                    <th>状态</th>
+                    <th>学习</th>
+                    <th>心理</th>
+                    <th>就业</th>
+                    <th>社交</th>
+                    <th>关系</th>
+                  </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="eventTab">
+            <div class="event-stage" id="eventStage">
+              <div class="empty-state">
+                <p class="eyebrow">事件中心</p>
+                <h2>暂时风平浪静</h2>
+                <p>选择本月工作后，随机事件会在这里出现。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="developTab">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">职业发展</p>
+                <h2>本月成长</h2>
+              </div>
+            </div>
+            <div class="develop-list" id="developList"></div>
+          </section>
+
+        </section>
+
+        <aside class="panel timeline-panel" aria-label="时间线">
+          <div class="panel-title">
+            <span>时间线</span>
+            <span class="muted">选择与结果</span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script src="src/data.js"></script>
+    <script src="src/engine.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
