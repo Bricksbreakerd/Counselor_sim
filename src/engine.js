@@ -1,5 +1,6 @@
 (function () {
   const STORAGE_KEY = "counselor-sim-save-v1";
+  const DEVELOPMENT_EFFECT_SCALE = 1.4;
   const { actions, events, slackItems, names, traits, monthlyChallenges, monthlySituationTemplates, monthEndEvents, problemIssues, storyFragments, developmentProjects, developmentProjectScenarios, eventMemoryMeta } = window.GameData;
 
   function rand(min, max) {
@@ -345,9 +346,15 @@
 
   function applyCounselorEffects(state, effects) {
     const c = state.counselor;
+    function scaled(key, value) {
+      if (!value) return value;
+      if (key === "energy" && value < 0) return Math.round(value * 0.45);
+      if (key === "mental" && value < 0) return Math.round(value * 0.75);
+      return value;
+    }
     c.health = clamp(c.health + (effects.health || 0), 0, 100);
-    c.energy = clamp(c.energy + (effects.energy || 0), 0, 100);
-    c.mental = clamp(c.mental + (effects.mental || 0), 0, 100);
+    c.energy = clamp(c.energy + scaled("energy", effects.energy || 0), 0, 100);
+    c.mental = clamp(c.mental + scaled("mental", effects.mental || 0), 0, 100);
     c.savings += effects.savings || 0;
     c.leadership = clamp(c.leadership + (effects.leadership || 0), 0, 100);
     c.trust = clamp(c.trust + (effects.trust || 0), 0, 100);
@@ -513,8 +520,8 @@
 
     const project = state.developmentProject;
     if (project) {
-      project.progress = clamp(project.progress + (choice.effects.progress || 0), 0, 100);
-      project.quality = clamp(project.quality + (choice.effects.quality || 0), 0, 100);
+      project.progress = clamp(project.progress + (choice.effects.progress || 0) * DEVELOPMENT_EFFECT_SCALE, 0, 100);
+      project.quality = clamp(project.quality + (choice.effects.quality || 0) * DEVELOPMENT_EFFECT_SCALE, 0, 100);
       project.risk = clamp(project.risk + (choice.effects.risk || 0), 0, 100);
     }
 
@@ -541,9 +548,9 @@
     if (!project) return;
     const score = project.progress * 0.5 + project.quality * 0.4 - project.risk * 0.1;
     let grade = "C";
-    if (score >= 82) grade = "S";
-    else if (score >= 70) grade = "A";
-    else if (score >= 56) grade = "B";
+    if (score >= 80) grade = "S";
+    else if (score >= 68) grade = "A";
+    else if (score >= 52) grade = "B";
 
     const pointsMap = { S: 45, A: 30, B: 18, C: 8 };
     const points = pointsMap[grade];
@@ -933,9 +940,9 @@
     const monthlySalary = getSalaryByRank(state.rankLevel) + c.development * 20;
     const livingCost = 2800 + Math.max(0, 80 - c.energy) * 15;
     c.savings += monthlySalary - livingCost;
-    c.health = clamp(c.health - 3, 0, 100);
+    c.health = clamp(c.health - 6, 0, 100);
     c.mental = clamp(c.mental - 2, 0, 100);
-    c.energy = clamp(c.energy + 8, 0, 100);
+    c.energy = clamp(c.energy + 14, 0, 100);
     c.risk = clamp(c.risk + 2, 0, 100);
 
     const selectedActionTags = new Set(
