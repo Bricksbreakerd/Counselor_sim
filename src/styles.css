@@ -499,8 +499,14 @@ button:disabled {
 }
 
 .month-start-bar .eyebrow {
+  display: block;
   color: var(--ink);
   font-size: 11px;
+}
+
+.month-start-bar .primary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 @keyframes fadeIn {
@@ -971,6 +977,20 @@ button:disabled {
 
 .state-dot.state-危机::before {
   background: var(--danger);
+}
+
+/* 正常 / 进步 / 毕业 三个状态原先没有配色：正常沿用默认绿点，
+   进步与毕业需要在列表里被一眼认出。 */
+.state-dot.state-正常::before {
+  background: var(--green);
+}
+
+.state-dot.state-进步::before {
+  background: var(--blue);
+}
+
+.state-dot.state-毕业::before {
+  background: var(--lavender);
 }
 
 .danger-score {
@@ -1511,7 +1531,9 @@ button:disabled {
 .tutorial-overlay {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  /* 必须高于应用内所有内容。早先的 z-index:70 会被 .tutorial-highlight 的
+     z-index:85 反超——被高亮的面板会盖住引导卡片，导致卡片点不动。 */
+  z-index: 9000;
   padding: 20px;
   background: transparent;
   pointer-events: none;
@@ -1519,16 +1541,30 @@ button:disabled {
 
 .tutorial-spotlight {
   position: fixed;
-  z-index: 75;
+  z-index: 1;
   border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgba(39, 59, 58, 0.38);
+  /* 用极细描边 + 大范围外阴影挖出高亮区域。
+     描边让「被框住的这块」看起来是有意为之，而不是一层压上去的暗色蒙版。 */
+  border: 1px solid rgba(91, 143, 200, 0.75);
+  box-shadow:
+    0 0 0 9999px rgba(39, 59, 58, 0.42),
+    0 0 0 5px rgba(91, 143, 200, 0.22);
   pointer-events: none;
+  transition:
+    left 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    top 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.2s ease;
 }
 
 .tutorial-card {
   position: fixed;
-  z-index: 95;
+  z-index: 2;
   width: min(400px, calc(100vw - 32px));
+  /* 小屏上限制高度：卡片矮一点，才有空间待在目标旁边而不是被挤到角落。 */
+  max-height: min(460px, calc(100vh - 32px));
+  overflow-y: auto;
   top: 50%;
   left: 50%;
   padding: 24px;
@@ -1538,6 +1574,17 @@ button:disabled {
   box-shadow: var(--shadow);
   transform: translate(-50%, -50%);
   pointer-events: auto;
+  transition:
+    left 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    top 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-spotlight,
+  .tutorial-card {
+    transition: none;
+  }
 }
 
 .tutorial-card.anchored {
@@ -1563,13 +1610,14 @@ button:disabled {
   justify-content: flex-end;
 }
 
+/* 高亮目标只负责「看起来被点亮」，不再抬升层级。
+   刻意不用 position:relative + z-index——那会让被高亮的面板跳出文档流层级，
+   反而盖住引导卡片。视觉上的强调由 spotlight 的挖空来完成。 */
 .tutorial-highlight {
-  position: relative;
-  z-index: 85;
   background: var(--panel-solid);
   filter: none;
-  box-shadow: 0 0 0 4px rgba(91, 143, 200, 0.5);
   border-radius: 8px;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .overlay-card {

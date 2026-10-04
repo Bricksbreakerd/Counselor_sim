@@ -1,0 +1,19 @@
+# 一次性调试脚本（本地临时产物，不属于项目内容）
+probe-*.mjs
+probe-*.js
+
+# Python / 工具缓存
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

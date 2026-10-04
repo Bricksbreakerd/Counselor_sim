@@ -10,9 +10,9 @@
     { id: "W08", name: "迎检与临时任务", category: "行政事务", desc: "应对检查、突击任务和临时被安排的工作。", effects: { energy: -10, leadership: 9, risk: -8, mental: -6, health: -2 } },
     { id: "W09", name: "数据与档案整理", category: "行政事务", desc: "整理学生档案和系统数据，降低期末压力。", effects: { energy: -5, risk: -6, leadership: 4, mental: -1 } },
     { id: "W10", name: "值班安全巡查", category: "行政事务", desc: "承担夜间或重点时段值班，降低安全风险。", effects: { energy: -9, health: -4, risk: -10, leadership: 5, mental: -4 } },
-    { id: "W11", name: "身心恢复与求助", category: "个人恢复", desc: "就医、心理咨询或寻求专业支持。", effects: { energy: -2, health: 15, mental: 13, savings: -450 } },
-    { id: "W12", name: "休息与补觉", category: "个人恢复", desc: "回家休息或补足睡眠，让身体重新启动。", effects: { energy: 20, health: 8, mental: 9, risk: 3 } },
-    { id: "W13", name: "请假休整", category: "个人恢复", desc: "暂停工作一天，换回更完整的恢复。", effects: { energy: 20, health: 13, mental: 12, leadership: -5, risk: 6 } },
+    { id: "W11", name: "身心恢复与求助", category: "个人恢复", desc: "就医、心理咨询或寻求专业支持。", effects: { energy: -2, health: 7, mental: 13, savings: -450 } },
+    { id: "W12", name: "休息与补觉", category: "个人恢复", desc: "回家休息或补足睡眠，让身体重新启动。", effects: { energy: 20, health: 5, mental: 9, risk: 3 } },
+    { id: "W13", name: "请假休整", category: "个人恢复", desc: "暂停工作一天，换回更完整的恢复。", effects: { energy: 20, health: 6, mental: 12, leadership: -5, risk: 6 } },
     { id: "S01", name: "谈心谈话", category: "学生工作", desc: "约谈学生，了解近况，降低隐藏风险。", effects: { energy: -14, trust: 8, risk: -6, mental: -2 }, studentEffect: { mental: 7, trust: 8 } },
     { id: "S02", name: "宿舍走访", category: "学生工作", desc: "走进宿舍，看见课堂之外的学生。", effects: { energy: -14, trust: 6, risk: -8, mental: -1 }, studentEffect: { social: 5, trust: 6 } },
     { id: "S03", name: "心理排查", category: "学生工作", desc: "用问卷和谈话识别潜在心理风险。", effects: { energy: -6, risk: -14, leadership: 4, mental: -5 }, studentEffect: { mental: 9, trust: 3 } },
@@ -144,20 +144,10 @@
     };
   });
 
-  const monthlyChallenges = [
-    { id: "C01", title: "迎检突袭", desc: "学院临时通知检查材料，领导很紧张。", primaryTag: "迎检", partialTags: ["材料", "领导"], direction: "行政事务", penalty: { leadership: -7, risk: 6, mental: -4 } },
-    { id: "C02", title: "重点学生波动", desc: "一名学生最近情绪低落，风险正在上升。", primaryTag: "学生", partialTags: ["心理", "风险"], direction: "学生工作", penalty: { risk: 9, trust: -4, mental: -4 } },
-    { id: "C03", title: "家长连环来电", desc: "几位家长对班级管理提出质疑。", primaryTag: "家长", partialTags: ["家庭", "学生"], direction: "学生工作", penalty: { parent: -8, trust: -3, mental: -3 } },
-    { id: "C04", title: "就业率催促", desc: "学院开始追就业材料。", primaryTag: "就业", partialTags: ["学生"], direction: "学生工作", penalty: { leadership: -6, risk: 4, mental: -3 } },
-    { id: "C05", title: "宿舍安全排查", desc: "夜不归宿和违规电器需要重新摸底。", primaryTag: "安全", partialTags: ["风险", "学生"], direction: "学生工作", penalty: { risk: 10, leadership: -4, health: -3 } },
-    { id: "C06", title: "材料报送高峰", desc: "多个系统同时截止，材料堆成山。", primaryTag: "材料", partialTags: ["领导"], direction: "行政事务", penalty: { leadership: -6, energy: -5, mental: -5 } },
-    { id: "C07", title: "心理排查复核", desc: "心理中心要求补充谈话记录。", primaryTag: "心理", partialTags: ["学生", "风险"], direction: "学生工作", penalty: { risk: 8, trust: -4, mental: -4 } },
-    { id: "C08", title: "集体活动筹备", desc: "班级活动无人牵头，班委开始摆烂。", primaryTag: "集体", partialTags: ["社交", "学生"], direction: "学生工作", penalty: { trust: -5, social: -5, leadership: -3 } },
-    { id: "C09", title: "学生身体预警", desc: "有学生长期熬夜，身体状况令人担心。", primaryTag: "身体", partialTags: ["恢复", "学生"], direction: "学生工作", penalty: { risk: 8, trust: -3, health: -2 } },
-    { id: "C10", title: "评优材料争议", desc: "学生私下议论评选结果不公平。", primaryTag: "领导", partialTags: ["材料"], direction: "行政事务", penalty: { trust: -7, leadership: -5, mental: -4 } },
-    { id: "C11", title: "临时值班通知", desc: "你被安排连续值班，睡眠计划泡汤。", primaryTag: "高压", partialTags: ["安全"], direction: "行政事务", penalty: { energy: -7, health: -5, mental: -5 } },
-    { id: "C12", title: "同事突然请假", desc: "部分工作临时压到你这里。", primaryTag: "恢复", partialTags: ["身体", "心理"], direction: "个人恢复", penalty: { energy: -6, mental: -5, colleague: -3 } }
-  ];
+  // 说明：原有一组 12 条 `monthlyChallenges`（C01-C12）已删除。
+  // 它与 `monthlySituationTemplates` 职责重复，且因为 id 前缀不同（SIT-xx vs Cxx），
+  // engine 里按 id 回查的分支永远匹配不到，属于纯粹的死数据。
+  // 「本月校园动态」统一由下面的 monthlySituationTemplates（24 条）提供。
 
   const monthlySituationTemplates = [
     { id: "SIT01", title: "学工部发布《心理健康教育活动周通知》", desc: "本月第二周为心理健康周，要求各学院开展主题班会和重点学生谈话。", primaryTag: "心理", partialTags: ["学生", "集体"], direction: "学生工作", penalty: { mental: -4, risk: 6, trust: -3 } },
@@ -1546,8 +1536,7 @@
 
   const introSchools = ["985", "211", "双一流", "民办本科"];
 
-  const eventMemoryMeta = {
-    E11: { studentScope: "single", choiceTags: [["学生", "了解原因"], ["学生", "信息"], ["学生", "家长介入"]] },
+  const existingEventMemoryMeta = {    E11: { studentScope: "single", choiceTags: [["学生", "了解原因"], ["学生", "信息"], ["学生", "家长介入"]] },
     E12: { studentScope: "single", choiceTags: [["共情", "支持"], ["尊重自主"], ["学业支持"]] },
     E13: { studentScope: "single", choiceTags: [["及时介入", "支持"], ["朋辈支持"], ["专业介入"]] },
     E14: { studentScope: "pair", choiceTags: [["共情", "边界"], ["规则优先"], ["隔离冲突"]] },
@@ -1614,13 +1603,254 @@
     ]
   };
 
+
+  // ====================================================================
+  // 以下三段由 tools/merge-delegated-data.js 生成，请勿手工编辑——
+  // 改数据请编辑对应内容后重新运行该脚本，或直接修改本段并保持格式一致。
+  // ====================================================================
+
+  // 事件选择效果覆写表（P1-1 数据驱动）：
+  // 优先级——数据表显式 effects > 下面的覆写表 > tone/category 推导值。
+  // 数组允许比 choices 短，或元素为 null，表示该选项沿用 tone 推导值。
+  const eventChoiceEffects = {
+    "E61": [{"energy":-6,"mental":-4,"health":-1,"risk":-14,"trust":5,"leadership":2,"savings":-200}, {"energy":-3,"mental":-3,"risk":-11,"trust":-2,"parent":4,"savings":-100}, {"energy":-1,"mental":-2,"risk":8,"trust":-3,"leadership":-2}],
+    "E62": [{"energy":-8,"mental":-5,"health":-1,"risk":-15,"trust":4,"leadership":2,"colleague":1}, {"energy":-5,"mental":-3,"risk":-9,"trust":3,"colleague":2}, {"energy":-2,"mental":-1,"risk":9,"trust":-2,"leadership":-3,"colleague":-2}],
+    "E63": [{"energy":-10,"mental":-9,"health":-2,"risk":-20,"trust":6,"leadership":3,"parent":2}, {"energy":-5,"mental":-4,"health":-1,"risk":-13,"trust":-2,"parent":4,"colleague":2,"leadership":1}, {"energy":-2,"mental":-3,"risk":7,"trust":-4,"colleague":-3}],
+    "E64": [{"energy":-9,"mental":-7,"health":-1,"risk":-17,"trust":5,"leadership":2,"parent":2,"savings":-100}, {"energy":-4,"mental":-3,"risk":-13,"trust":-3,"leadership":2,"colleague":2}, {"energy":-2,"mental":-3,"risk":11,"trust":-5,"leadership":-2,"colleague":-1}],
+    "E65": [{"energy":-8,"mental":-6,"health":-1,"risk":-16,"trust":-1,"parent":5,"leadership":2,"colleague":1}, {"energy":-9,"mental":-8,"health":-2,"risk":-11,"trust":3,"parent":1,"savings":-100}, {"energy":-1,"mental":-2,"risk":6,"trust":-3,"leadership":-2}],
+    "E66": [{"energy":-7,"mental":-6,"health":-1,"risk":-16,"trust":6,"leadership":2,"savings":-150}, {"energy":-4,"mental":-4,"risk":-9,"trust":2,"parent":2,"colleague":2}, {"energy":-1,"mental":-2,"risk":12,"trust":-5,"leadership":-2}],
+    "E67": [{"energy":-8,"mental":-5,"health":-1,"risk":-15,"trust":5,"leadership":-1,"colleague":-1,"savings":-100}, {"energy":-4,"mental":-2,"risk":-12,"trust":-1,"colleague":2,"leadership":2}, {"energy":-2,"mental":-1,"risk":9,"trust":-3,"leadership":-2}],
+    "E68": [{"energy":-8,"mental":-6,"health":-1,"risk":-16,"trust":4,"leadership":2,"colleague":1}, {"energy":-4,"mental":-3,"risk":-13,"trust":-4,"leadership":1,"colleague":2}, {"energy":-1,"mental":-1,"risk":10,"trust":-3,"colleague":-3}],
+    "E69": [{"energy":-5,"mental":-5,"risk":-12,"trust":3,"parent":3,"colleague":1}, {"energy":-6,"mental":-4,"health":-1,"risk":-13,"trust":5,"parent":2,"leadership":-2}, {"energy":-2,"mental":-2,"risk":7,"trust":-4,"parent":2,"leadership":-1}],
+    "E70": [{"energy":-10,"mental":-11,"health":-2,"risk":-22,"trust":-3,"leadership":3,"parent":2}, {"energy":-6,"mental":-8,"health":-1,"risk":-8,"trust":4,"colleague":-2}, {"energy":-4,"mental":-4,"risk":-14,"trust":-5,"parent":6,"leadership":-2}],
+    "M01": [{"energy":6,"mental":8,"health":0,"savings":-60,"leadership":0,"trust":0,"parent":0,"colleague":0,"risk":0,"development":0}, {"energy":-8,"mental":-6,"health":-1,"savings":0,"leadership":3,"trust":0,"parent":0,"colleague":0,"risk":-2,"development":2}, {"energy":5,"mental":12,"health":1,"savings":-120,"leadership":0,"trust":0,"parent":0,"colleague":3,"risk":4,"development":0}],
+    "M02": [{"energy":-4,"mental":-2,"health":3,"savings":-220,"leadership":0,"trust":0,"parent":0,"colleague":0,"risk":-2,"development":0}, {"energy":2,"mental":1,"health":-2,"savings":-10,"leadership":-1,"trust":0,"parent":0,"colleague":0,"risk":6,"development":0}, {"energy":-2,"mental":4,"health":2,"savings":-150,"leadership":1,"trust":0,"parent":0,"colleague":3,"risk":-2,"development":0}],
+    "M03": [{"energy":-4,"mental":-3,"health":0,"savings":0,"leadership":1,"trust":0,"parent":6,"colleague":0,"risk":-4,"development":0}, {"energy":3,"mental":4,"health":0,"savings":0,"leadership":-3,"trust":-5,"parent":-5,"colleague":0,"risk":6,"development":0}, {"energy":-7,"mental":-2,"health":-1,"savings":-30,"leadership":2,"trust":1,"parent":8,"colleague":0,"risk":-6,"development":1}],
+    "M04": [{"energy":-1,"mental":-2,"health":0,"savings":150,"leadership":1,"trust":0,"parent":0,"colleague":0,"risk":0,"development":0}, {"energy":3,"mental":9,"health":1,"savings":-180,"leadership":0,"trust":0,"parent":0,"colleague":0,"risk":3,"development":0}, {"energy":-3,"mental":5,"health":0,"savings":-500,"leadership":0,"trust":0,"parent":0,"colleague":0,"risk":-2,"development":0}],
+    "M05": [{"energy":-4,"mental":5,"health":0,"savings":0,"leadership":2,"trust":0,"parent":0,"colleague":0,"risk":-2,"development":2}, {"energy":0,"mental":12,"health":0,"savings":0,"leadership":0,"trust":0,"parent":0,"colleague":4,"risk":2,"development":0}, {"energy":3,"mental":5,"health":-3,"savings":0,"leadership":-2,"trust":0,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "M06": [{"energy":1,"mental":6,"health":-1,"savings":0,"leadership":0,"trust":0,"parent":0,"colleague":3,"risk":0,"development":0}, {"energy":-3,"mental":-3,"health":0,"savings":0,"leadership":2,"trust":0,"parent":0,"colleague":-1,"risk":0,"development":3}, {"energy":1,"mental":2,"health":0,"savings":0,"leadership":0,"trust":0,"parent":0,"colleague":-1,"risk":1,"development":0}],
+    "M07": [{"energy":9,"mental":6,"health":3,"savings":0,"leadership":-2,"trust":0,"parent":0,"colleague":0,"risk":5,"development":0}, {"energy":-5,"mental":-7,"health":-2,"savings":0,"leadership":3,"trust":0,"parent":0,"colleague":0,"risk":-2,"development":3}, {"energy":2,"mental":9,"health":1,"savings":0,"leadership":0,"trust":0,"parent":0,"colleague":0,"risk":2,"development":0}],
+    "M08": [{"energy":-4,"mental":8,"health":0,"savings":0,"leadership":1,"trust":7,"parent":0,"colleague":0,"risk":-3,"development":1}, {"energy":2,"mental":4,"health":0,"savings":0,"leadership":-1,"trust":-3,"parent":0,"colleague":0,"risk":2,"development":0}, {"energy":8,"mental":3,"health":2,"savings":0,"leadership":-2,"trust":-7,"parent":0,"colleague":0,"risk":5,"development":0}],
+    "E71": [{"energy":-10,"mental":-3,"health":-1,"savings":-50,"leadership":3,"trust":6,"parent":0,"colleague":0,"risk":-16,"development":1}, null, {"energy":-4,"mental":-2,"health":-4,"savings":0,"leadership":0,"trust":-3,"parent":0,"colleague":0,"risk":9,"development":0}],
+    "E73": [null, null, {"energy":1,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":0,"colleague":-1,"risk":10,"development":0}],
+    "E74": [null, null, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":-2,"colleague":0,"risk":8,"development":0}],
+    "E75": [null, null, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "E76": [null, null, {"energy":-3,"mental":-3,"health":0,"savings":0,"leadership":1,"trust":-3,"parent":0,"colleague":0,"risk":7,"development":0}],
+    "E77": [null, null, {"energy":2,"mental":0,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":0,"colleague":0,"risk":10,"development":0}],
+    "E78": [null, null, {"energy":-3,"mental":-2,"health":0,"savings":0,"leadership":1,"trust":-2,"parent":1,"colleague":0,"risk":6,"development":0}],
+    "E79": [{"energy":-9,"mental":-3,"health":-1,"savings":0,"leadership":4,"trust":5,"parent":0,"colleague":1,"risk":-12,"development":4}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-5,"parent":0,"colleague":-2,"risk":8,"development":-3}],
+    "E80": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":9,"development":0}],
+    "E81": [null, {"energy":-4,"mental":-3,"health":0,"savings":0,"leadership":1,"trust":-4,"parent":0,"colleague":0,"risk":7,"development":0}, null],
+    "E82": [null, {"energy":-5,"mental":-3,"health":0,"savings":0,"leadership":2,"trust":-2,"parent":0,"colleague":0,"risk":5,"development":0}, null],
+    "E83": [{"energy":-9,"mental":-3,"health":-1,"savings":-100,"leadership":2,"trust":6,"parent":0,"colleague":1,"risk":-18,"development":1}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-5,"parent":-1,"colleague":0,"risk":14,"development":0}],
+    "E84": [{"energy":-9,"mental":-4,"health":-1,"savings":-120,"leadership":3,"trust":5,"parent":3,"colleague":1,"risk":-20,"development":1}, null, {"energy":2,"mental":0,"health":0,"savings":0,"leadership":-4,"trust":-5,"parent":-4,"colleague":-2,"risk":15,"development":0}],
+    "E85": [null, {"energy":-8,"mental":-2,"health":0,"savings":0,"leadership":2,"trust":6,"parent":1,"colleague":3,"risk":-10,"development":2}, null],
+    "E86": [null, {"energy":-5,"mental":-3,"health":0,"savings":0,"leadership":2,"trust":-2,"parent":0,"colleague":0,"risk":7,"development":0}, null],
+    "E90": [null, null, {"energy":2,"mental":2,"health":-1,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":9,"development":0}],
+    "E93": [{"energy":-8,"mental":-3,"health":-1,"savings":-80,"leadership":2,"trust":5,"parent":0,"colleague":1,"risk":-17,"development":1}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-5,"parent":-1,"colleague":0,"risk":14,"development":0}],
+    "E98": [{"energy":-11,"mental":-6,"health":-1,"savings":-150,"leadership":3,"trust":6,"parent":2,"colleague":1,"risk":-20,"development":2}, null, {"energy":-1,"mental":-2,"health":0,"savings":0,"leadership":-3,"trust":-3,"parent":-2,"colleague":0,"risk":13,"development":0}],
+    "E102": [{"energy":-3,"mental":8,"health":0,"savings":0,"leadership":1,"trust":8,"parent":0,"colleague":0,"risk":-3,"development":1}, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":0,"trust":-4,"parent":0,"colleague":0,"risk":0,"development":0}, {"energy":-2,"mental":0,"health":0,"savings":0,"leadership":1,"trust":1,"parent":0,"colleague":0,"risk":-1,"development":0}],
+    "E103": [{"energy":-9,"mental":-3,"health":-1,"savings":-60,"leadership":2,"trust":6,"parent":0,"colleague":0,"risk":-15,"development":1}, null, null],
+    "E105": [{"energy":-8,"mental":-3,"health":0,"savings":-60,"leadership":2,"trust":6,"parent":0,"colleague":1,"risk":-16,"development":1}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":-1,"colleague":0,"risk":12,"development":0}],
+    "E107": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":-2,"colleague":0,"risk":7,"development":0}],
+    "E108": [null, null, {"energy":-2,"mental":-1,"health":0,"savings":0,"leadership":1,"trust":-2,"parent":0,"colleague":0,"risk":6,"development":0}],
+    "E109": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-3,"trust":-3,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "E110": [{"energy":-7,"mental":-2,"health":0,"savings":0,"leadership":2,"trust":4,"parent":0,"colleague":0,"risk":-14,"development":1}, null, null],
+    "E113": [{"energy":-5,"mental":-2,"health":0,"savings":0,"leadership":2,"trust":4,"parent":0,"colleague":0,"risk":-8,"development":1}, {"energy":-4,"mental":-1,"health":1,"savings":0,"leadership":1,"trust":3,"parent":0,"colleague":0,"risk":-6,"development":1}, {"energy":1,"mental":-1,"health":0,"savings":0,"leadership":-1,"trust":-2,"parent":0,"colleague":-1,"risk":7,"development":0}],
+    "E116": [null, null, {"energy":-2,"mental":-1,"health":0,"savings":0,"leadership":2,"trust":1,"parent":-5,"colleague":0,"risk":4,"development":0}],
+    "E120": [{"energy":-8,"mental":-3,"health":-1,"savings":0,"leadership":2,"trust":6,"parent":0,"colleague":1,"risk":-8,"development":1}, null, null],
+    "E123": [null, {"energy":-4,"mental":-2,"health":0,"savings":0,"leadership":3,"trust":-5,"parent":0,"colleague":0,"risk":6,"development":0}, null],
+    "E126": [null, null, {"energy":2,"mental":2,"health":0,"savings":0,"leadership":-3,"trust":-3,"parent":0,"colleague":0,"risk":11,"development":-2}],
+    "E127": [null, null, {"energy":-3,"mental":-3,"health":-4,"savings":0,"leadership":1,"trust":-3,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "E128": [{"energy":-7,"mental":-2,"health":0,"savings":-50,"leadership":2,"trust":5,"parent":0,"colleague":0,"risk":-15,"development":1}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":-1,"colleague":0,"risk":12,"development":0}],
+    "E129": [null, null, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":-4,"trust":-2,"parent":0,"colleague":-1,"risk":13,"development":-2}],
+    "E132": [{"energy":-9,"mental":-4,"health":-1,"savings":-100,"leadership":3,"trust":5,"parent":3,"colleague":1,"risk":-20,"development":1}, null, {"energy":2,"mental":0,"health":0,"savings":0,"leadership":-4,"trust":-5,"parent":-4,"colleague":-2,"risk":15,"development":0}],
+    "E134": [null, null, {"energy":-3,"mental":-2,"health":0,"savings":0,"leadership":2,"trust":-4,"parent":0,"colleague":0,"risk":5,"development":0}],
+    "E139": [null, null, {"energy":-4,"mental":-3,"health":-2,"savings":0,"leadership":1,"trust":-3,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "E141": [null, null, {"energy":2,"mental":1,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":8,"development":0}],
+    "E142": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-4,"parent":0,"colleague":0,"risk":9,"development":-2}],
+    "E143": [null, null, {"energy":-2,"mental":-1,"health":0,"savings":0,"leadership":1,"trust":-2,"parent":0,"colleague":0,"risk":6,"development":0}],
+    "E144": [null, null, {"energy":-3,"mental":-2,"health":0,"savings":0,"leadership":1,"trust":-3,"parent":0,"colleague":0,"risk":2,"development":1}],
+    "E146": [null, null, {"energy":-2,"mental":-2,"health":-2,"savings":0,"leadership":0,"trust":-3,"parent":0,"colleague":0,"risk":6,"development":0}],
+    "E147": [{"energy":-5,"mental":-3,"health":0,"savings":0,"leadership":2,"trust":4,"parent":0,"colleague":0,"risk":-7,"development":1}, null, {"energy":1,"mental":-3,"health":0,"savings":-200,"leadership":-3,"trust":-4,"parent":0,"colleague":0,"risk":10,"development":0}],
+    "E148": [null, null, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":10,"development":0}],
+    "E149": [{"energy":-8,"mental":-3,"health":0,"savings":-80,"leadership":2,"trust":5,"parent":0,"colleague":1,"risk":-17,"development":1}, null, {"energy":2,"mental":-3,"health":0,"savings":0,"leadership":-3,"trust":-5,"parent":-1,"colleague":0,"risk":13,"development":0}],
+    "E152": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-2,"trust":-3,"parent":0,"colleague":0,"risk":9,"development":0}],
+    "E159": [{"energy":-8,"mental":-2,"health":-1,"savings":0,"leadership":3,"trust":6,"parent":0,"colleague":0,"risk":-6,"development":2}, {"energy":1,"mental":-2,"health":0,"savings":0,"leadership":0,"trust":1,"parent":0,"colleague":0,"risk":2,"development":0}, null],
+    "E162": [null, null, {"energy":2,"mental":-2,"health":0,"savings":0,"leadership":-3,"trust":-4,"parent":0,"colleague":-1,"risk":8,"development":0}],
+    "E163": [{"energy":-9,"mental":-4,"health":-1,"savings":-120,"leadership":3,"trust":5,"parent":3,"colleague":1,"risk":-20,"development":1}, null, {"energy":2,"mental":0,"health":0,"savings":0,"leadership":-4,"trust":-5,"parent":-4,"colleague":-2,"risk":15,"development":0}],
+    "E164": [{"energy":-2,"mental":8,"health":0,"savings":0,"leadership":1,"trust":8,"parent":0,"colleague":0,"risk":-2,"development":1}, {"energy":-1,"mental":1,"health":0,"savings":0,"leadership":1,"trust":-1,"parent":0,"colleague":0,"risk":0,"development":0}, {"energy":0,"mental":-2,"health":0,"savings":0,"leadership":0,"trust":-3,"parent":0,"colleague":0,"risk":0,"development":0}],
+    "E165": [{"energy":-6,"mental":4,"health":0,"savings":-50,"leadership":2,"trust":6,"parent":0,"colleague":1,"risk":-5,"development":2}, null, {"energy":1,"mental":1,"health":0,"savings":0,"leadership":0,"trust":1,"parent":0,"colleague":0,"risk":6,"development":0}],
+    "E166": [{"energy":-4,"mental":8,"health":0,"savings":0,"leadership":1,"trust":8,"parent":0,"colleague":0,"risk":-3,"development":1}, {"energy":-1,"mental":-2,"health":0,"savings":0,"leadership":0,"trust":-2,"parent":0,"colleague":0,"risk":0,"development":0}, null]
+  };
+
+  // 事件记忆元数据（P1-4）：决定事件绑定哪些学生、给哪些态度标签。
+  const generatedEventMemoryMeta = {
+    "E01": { studentScope: "single", choiceTags: [["共情", "支持"], ["专业流程", "支持"], ["忽视"]] },
+    "E02": { studentScope: "class", choiceTags: [["支持", "朋辈支持"], ["支持"], ["规则优先"]] },
+    "E03": { studentScope: "class", choiceTags: [["支持", "持续跟进"], ["共情", "支持"], ["专业流程"]] },
+    "E04": { studentScope: "pair", choiceTags: [["规则优先"], ["公开"], ["支持", "保护"]] },
+    "E05": { studentScope: "single", choiceTags: [["支持", "及时介入"], ["保护", "支持"], ["家长介入"]] },
+    "E06": { studentScope: "single", choiceTags: [["专业流程"], ["尊重自主", "共情"], ["专业流程", "规则优先"]] },
+    "E07": { studentScope: "single", choiceTags: [["及时介入", "朋辈支持"], ["家长介入"], ["专业流程", "及时介入"]] },
+    "E08": { studentScope: "single", choiceTags: [["及时介入", "支持"], ["隐私保护", "共情"], ["专业流程"]] },
+    "E09": { studentScope: "class", choiceTags: [["持续跟进", "专业流程"], ["专业流程"], ["边界清楚"]] },
+    "E10": { studentScope: "single", choiceTags: [["边界清楚", "规则优先"], ["专业流程", "模糊边界"], ["规则优先", "专业流程"]] },
+    "E29": { studentScope: "class", choiceTags: [["持续跟进"], ["边界清楚"], ["边界清楚", "专业流程"]] },
+    "E30": { studentScope: "class", choiceTags: [["持续跟进"], ["边界清楚"], ["专业流程"]] },
+    "E31": { studentScope: "class", choiceTags: [["持续跟进"], ["忽视"], ["专业流程"]] },
+    "E32": { studentScope: "class", choiceTags: [["忽视"], ["支持"], ["边界清楚"]] },
+    "E33": { studentScope: "class", choiceTags: [["模糊边界"], ["边界清楚"], ["边界清楚"]] },
+    "E34": { studentScope: "class", choiceTags: [["朋辈支持"], ["边界清楚"], ["边界清楚", "朋辈支持"]] },
+    "E35": { studentScope: "single", choiceTags: [["公开"], ["隐私保护", "共情"], ["专业流程"]] },
+    "E36": { studentScope: "class", choiceTags: [["持续跟进"], ["共情"], ["忽视"]] },
+    "E37": { studentScope: "class", choiceTags: [["模糊边界"], ["模糊边界"], ["边界清楚", "规则优先"]] },
+    "E38": { studentScope: "class", choiceTags: [["持续跟进", "专业流程"], ["边界清楚", "专业流程"], ["专业流程"]] },
+    "E39": { studentScope: "single", choiceTags: [["共情", "支持", "模糊边界"], ["边界清楚", "持续跟进"], ["边界清楚", "忽视"]] },
+    "E40": { studentScope: "class", choiceTags: [["朋辈支持"], ["支持"], ["边界清楚"]] },
+    "E41": { studentScope: "single", choiceTags: [["朋辈支持", "支持"], ["边界清楚"], ["共情", "朋辈支持"]] },
+    "E42": { studentScope: "class", choiceTags: [["持续跟进", "专业流程"], ["专业流程"], ["边界清楚"]] },
+    "E43": { studentScope: "class", choiceTags: [["模糊边界"], ["专业流程"], ["边界清楚"]] },
+    "E44": { studentScope: "single", choiceTags: [["支持", "模糊边界"], ["边界清楚", "保护"], ["模糊边界", "朋辈支持"]] },
+    "E45": { studentScope: "class", choiceTags: [["持续跟进"], ["专业流程"], ["朋辈支持"]] },
+    "E46": { studentScope: "class", choiceTags: [["专业流程"], ["模糊边界"], ["模糊边界", "忽视"]] },
+    "E47": { studentScope: "single", choiceTags: [["规则优先"], ["模糊边界", "朋辈支持"], ["规则优先", "持续跟进"]] },
+    "E48": { studentScope: "class", choiceTags: [["规则优先"], ["朋辈支持"], ["朋辈支持", "尊重自主"]] },
+    "E49": { studentScope: "class", choiceTags: [["专业流程", "持续跟进"], ["专业流程"], ["朋辈支持"]] },
+    "E50": { studentScope: "single", choiceTags: [["共情", "支持"], ["持续跟进"], ["公开", "模糊边界"]] },
+    "E51": { studentScope: "class", choiceTags: [["持续跟进", "专业流程"], ["边界清楚"], ["专业流程"]] },
+    "E52": { studentScope: "single", choiceTags: [["边界清楚"], ["持续跟进", "共情"], ["共情", "支持"]] },
+    "E53": { studentScope: "class", choiceTags: [["支持"], ["边界清楚"], ["专业流程"]] },
+    "E54": { studentScope: "single", choiceTags: [["规则优先"], ["支持", "保护"], ["忽视"]] },
+    "E55": { studentScope: "class", choiceTags: [["朋辈支持"], ["朋辈支持", "公开"], ["边界清楚"]] },
+    "E56": { studentScope: "class", choiceTags: [["持续跟进", "专业流程"], ["专业流程"], ["朋辈支持"]] },
+    "E57": { studentScope: "single", choiceTags: [["支持", "共情"], ["朋辈支持"], ["支持"]] },
+    "E58": { studentScope: "class", choiceTags: [["朋辈支持"], ["支持"], ["朋辈支持", "支持"]] },
+    "E59": { studentScope: "class", choiceTags: [["支持"], ["朋辈支持", "尊重自主"], ["边界清楚"]] },
+    "E60": { studentScope: "single", choiceTags: [["边界清楚"], ["朋辈支持", "公开"], ["边界清楚"]] },
+    "E71": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["支持"], ["忽视"]] },
+    "E72": { studentScope: "single", choiceTags: [["共情", "支持"], ["家长介入"], ["支持"]] },
+    "E73": { studentScope: "pair", choiceTags: [["专业流程", "持续跟进"], ["公开", "规则优先"], ["专业流程"]] },
+    "E74": { studentScope: "single", choiceTags: [["边界清楚"], ["家长介入", "持续跟进"], ["忽视"]] },
+    "E75": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["支持"], ["支持"]] },
+    "E76": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["朋辈支持"], ["支持"]] },
+    "E77": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["朋辈支持"], ["忽视"]] },
+    "E78": { studentScope: "single", choiceTags: [["尊重自主", "共情"], ["家长介入"], ["支持"]] },
+    "E79": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["忽视"]] },
+    "E80": { studentScope: "pair", choiceTags: [["共情", "边界清楚"], ["公开", "规则优先"], ["忽视"]] },
+    "E81": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["家长介入"], ["支持"]] },
+    "E82": { studentScope: "pair", choiceTags: [["持续跟进"], ["规则优先"], ["朋辈支持"]] },
+    "E83": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["家长介入"], ["忽视"]] },
+    "E84": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["专业流程"], ["忽视"]] },
+    "E85": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["低共情"]] },
+    "E86": { studentScope: "single", choiceTags: [["共情", "隐私保护"], ["公开"], ["朋辈支持"]] },
+    "E87": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E88": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["家长介入"], ["低共情"]] },
+    "E89": { studentScope: "single", choiceTags: [["尊重自主", "共情"], ["家长介入"], ["家长介入", "低共情"]] },
+    "E90": { studentScope: "single", choiceTags: [["专业流程", "持续跟进"], ["共情", "支持"], ["忽视"]] },
+    "E91": { studentScope: "single", choiceTags: [["尊重自主", "共情"], ["专业流程"], ["专业流程", "规则优先"]] },
+    "E92": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持", "专业流程"], ["支持"]] },
+    "E93": { studentScope: "single", choiceTags: [["保护", "及时介入"], ["家长介入"], ["忽视"]] },
+    "E94": { studentScope: "single", choiceTags: [["专业流程", "支持"], ["支持"], ["忽视"]] },
+    "E95": { studentScope: "single", choiceTags: [["共情", "支持"], ["支持", "持续跟进"], ["低共情"]] },
+    "E96": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["支持", "共情"]] },
+    "E97": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["专业流程", "支持"], ["忽视"]] },
+    "E98": { studentScope: "single", choiceTags: [["及时介入", "专业流程"], ["持续跟进", "支持"], ["朋辈支持"]] },
+    "E99": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E100": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["专业流程"], ["忽视"]] },
+    "E101": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E102": { studentScope: "single", choiceTags: [["共情", "支持"], ["低共情"], ["边界清楚"]] },
+    "E103": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["支持"], ["专业流程"]] },
+    "E104": { studentScope: "single", choiceTags: [["规则优先", "持续跟进"], ["共情", "支持"], ["忽视"]] },
+    "E105": { studentScope: "single", choiceTags: [["保护", "及时介入"], ["支持"], ["忽视"]] },
+    "E106": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["尊重自主"], ["支持"]] },
+    "E107": { studentScope: "single", choiceTags: [["共情", "边界清楚"], ["家长介入", "边界清楚"], ["忽视"]] },
+    "E108": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持", "共情"], ["支持"]] },
+    "E109": { studentScope: "single", choiceTags: [["规则优先", "支持"], ["规则优先"], ["朋辈支持"]] },
+    "E110": { studentScope: "single", choiceTags: [["专业流程", "保护"], ["保护"], ["忽视"]] },
+    "E111": { studentScope: "single", choiceTags: [["朋辈支持"], ["持续跟进", "支持"], ["忽视"]] },
+    "E112": { studentScope: "single", choiceTags: [["共情"], ["家长介入"], ["家长介入", "低共情"]] },
+    "E113": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["规则优先", "持续跟进"], ["朋辈支持"]] },
+    "E114": { studentScope: "single", choiceTags: [["专业流程", "支持"], ["尊重自主"], ["家长介入"]] },
+    "E115": { studentScope: "pair", choiceTags: [["共情"], ["持续跟进", "共情"], ["忽视"]] },
+    "E116": { studentScope: "single", choiceTags: [["家长介入"], ["家长介入", "支持"], ["边界清楚"]] },
+    "E117": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["朋辈支持", "支持"], ["支持"]] },
+    "E118": { studentScope: "single", choiceTags: [["规则优先"], ["支持", "保护"], ["尊重自主"]] },
+    "E119": { studentScope: "single", choiceTags: [["共情", "支持"], ["支持"], ["忽视"]] },
+    "E120": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["低共情"], ["尊重自主"]] },
+    "E121": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["忽视"]] },
+    "E122": { studentScope: "single", choiceTags: [["专业流程"], ["支持", "专业流程"], ["规则优先", "专业流程"]] },
+    "E123": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["规则优先"], ["朋辈支持"]] },
+    "E124": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["支持"], ["保护"]] },
+    "E125": { studentScope: "single", choiceTags: [["共情", "持续跟进"], ["规则优先", "持续跟进"], ["家长介入"]] },
+    "E126": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["忽视"]] },
+    "E127": { studentScope: "single", choiceTags: [["支持"], ["保护", "支持"], ["低共情"]] },
+    "E128": { studentScope: "single", choiceTags: [["保护", "及时介入"], ["专业流程"], ["忽视"]] },
+    "E129": { studentScope: "single", choiceTags: [["规则优先"], ["共情", "持续跟进"], ["忽视", "模糊边界"]] },
+    "E130": { studentScope: "single", choiceTags: [["尊重自主", "共情"], ["家长介入"], ["支持"]] },
+    "E131": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["家长介入"]] },
+    "E132": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["家长介入"], ["忽视"]] },
+    "E133": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E134": { studentScope: "single", choiceTags: [["规则优先"], ["共情", "持续跟进"], ["规则优先", "低共情"]] },
+    "E135": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E136": { studentScope: "single", choiceTags: [["专业流程", "支持"], ["支持"], ["支持"]] },
+    "E137": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["支持"]] },
+    "E138": { studentScope: "single", choiceTags: [["支持"], ["支持", "保护"], ["家长介入"]] },
+    "E139": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["保护", "支持"], ["低共情"]] },
+    "E140": { studentScope: "single", choiceTags: [["尊重自主", "共情"], ["家长介入"], ["家长介入", "低共情"]] },
+    "E141": { studentScope: "single", choiceTags: [["专业流程", "持续跟进"], ["共情", "支持"], ["忽视"]] },
+    "E142": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["忽视"]] },
+    "E143": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["支持"]] },
+    "E144": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["共情", "支持"], ["忽视"]] },
+    "E145": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E146": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["保护", "支持"], ["低共情"]] },
+    "E147": { studentScope: "single", choiceTags: [["专业流程", "支持"], ["支持"], ["尊重自主"]] },
+    "E148": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["专业流程"], ["忽视"]] },
+    "E149": { studentScope: "single", choiceTags: [["保护", "及时介入"], ["家长介入"], ["忽视"]] },
+    "E150": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["支持"], ["支持"]] },
+    "E151": { studentScope: "single", choiceTags: [["保护", "及时介入"], ["专业流程", "保护"], ["低共情"]] },
+    "E152": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["忽视"]] },
+    "E153": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["支持"], ["尊重自主"]] },
+    "E154": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["规则优先", "支持"], ["支持"]] },
+    "E155": { studentScope: "single", choiceTags: [["共情", "支持"], ["支持"], ["尊重自主"]] },
+    "E156": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["支持"], ["忽视"]] },
+    "E157": { studentScope: "single", choiceTags: [["支持", "边界清楚"], ["共情"], ["支持"]] },
+    "E158": { studentScope: "single", choiceTags: [["及时介入", "专业流程"], ["支持", "持续跟进"], ["支持"]] },
+    "E159": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["支持"], ["支持"]] },
+    "E160": { studentScope: "single", choiceTags: [["支持", "专业流程"], ["忽视"], ["专业流程"]] },
+    "E161": { studentScope: "single", choiceTags: [["共情", "支持"], ["支持", "专业流程"], ["家长介入"]] },
+    "E162": { studentScope: "class", choiceTags: [["规则优先"], ["支持"], ["忽视"]] },
+    "E163": { studentScope: "single", choiceTags: [["及时介入", "保护"], ["家长介入"], ["忽视"]] },
+    "E164": { studentScope: "single", choiceTags: [["共情", "支持"], ["边界清楚", "共情"], ["边界清楚"]] },
+    "E165": { studentScope: "single", choiceTags: [["支持", "持续跟进"], ["支持"], ["尊重自主"]] },
+    "E166": { studentScope: "single", choiceTags: [["共情", "支持"], ["支持"], ["低共情"]] }
+  };
+
+  // 把覆写表挂到 events / monthEndEvents 上，之后引擎只读 choice.effects。
+  function applyChoiceEffects(list) {
+    list.forEach((event) => {
+      const overrides = eventChoiceEffects[event.id];
+      if (!overrides) return;
+      event.choices = event.choices.map((choice, index) => {
+        const override = overrides[index];
+        if (!override) return choice;
+        return { ...choice, effects: override };
+      });
+    });
+    return list;
+  }
+
+  applyChoiceEffects(events);
+  applyChoiceEffects(monthEndEvents);
+
+  const eventMemoryMeta = { ...generatedEventMemoryMeta, ...existingEventMemoryMeta };
+
   window.GameData = {
     actions: scopedActions,
     events: events.concat(extraSemesterEvents),
     slackItems,
     names,
     traits,
-    monthlyChallenges,
     monthlySituationTemplates,
     monthEndEvents,
     problemIssues,

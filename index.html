@@ -59,7 +59,7 @@
       </header>
 
       <main class="layout">
-        <aside class="panel counselor-panel" aria-label="辅导员状态">
+        <aside class="panel counselor-panel" id="counselorPanel" aria-label="辅导员状态">
           <div class="panel-title">
             <span>辅导员</span>
             <button id="toggleProfile" class="icon-button" aria-label="收起档案">−</button>
@@ -148,6 +148,11 @@
             </div>
             <div class="develop-list" id="developList"></div>
           </section>
+
+          <div class="month-start-bar" id="monthStartBar">
+            <p><span class="eyebrow">本月计划</span><span id="monthStartHint">完成工作、学生、发展三个模块后即可进入本月</span></p>
+            <button id="startMonthButtonInBar" class="primary-button">进入本月</button>
+          </div>
 
         </section>
 

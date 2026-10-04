@@ -20,24 +20,26 @@
       title: "工作模块",
       content: "每个月需要选择 3 项重点工作。\n学生工作影响学生信任和班级风险，行政事务影响领导评价和材料风险，个人恢复影响身体、精力和心理。\n你不可能把所有事都做完，重点是你没做的那些会不会在月底爆炸。",
       tab: "work",
-      target: "#workTab"
+      // 只框住模块标题而不是整块面板：整块面板比视口还高，
+      // 挖空会溢出屏幕，卡片也只能压在正被介绍的列表上。
+      target: "#workTab .section-head"
     },
     {
       title: "学生模块",
       content: "每个月会自动生成 3 名问题学生，你需要为每名学生选择处理方式。\n处理方式会影响学生属性、风险值、信任关系。没有解决的问题下个月还会继续出现。\n学生不是数据，但游戏里他们确实是数据。",
       tab: "student",
-      target: "#studentTab"
+      target: "#studentTab .section-head"
     },
     {
       title: "发展模块",
       content: "每个学期先选择一个发展模块，再随机三选一具体方向。\n权威项目收益高，但风险和难度也高；野鸡项目可能容易，但含金量低。\n你可以认真搞科研，也可以报名“全国大学生校园锦鲤大赛”。",
       tab: "develop",
-      target: "#developTab"
+      target: "#developTab .section-head"
     },
     {
       title: "你的状态",
       content: "左边是你的身体、精力、心理、存款和外部关系。\n身体低于 15 可能猝死，精力过低会影响行动效率和月底生活支出，心理过低会触发负面状态。\n你可以把它当成一份体检报告。现在数值都很好，但它们不会一直很好。",
-      target: "#counselorPanel"
+      target: "#counselorPanel .profile-head"
     },
     {
       title: "战略性摸鱼",
@@ -47,12 +49,12 @@
     {
       title: "右侧时间线",
       content: "时间线会记录你的每一次选择、事件结果、月报和学期总结。\n它不可修改。你做出的选择会留下痕迹，并影响后续学生记忆和个人结局。\n这里以后会写满你的光辉事迹、翻车现场和“我当时为什么要选这个”。",
-      target: "#timeline"
+      target: ".timeline-panel .panel-title"
     },
     {
       title: "准备开始",
-      content: "点击右上角的“进入本月”后，会自动进入事件页。\n你需要处理随机事件、校园动态和月终插曲。\n现在，去处理你的第一件烂摊子吧。",
-      target: "#startMonthButton"
+      content: "点击「进入本月」后，会自动进入事件页。\n你需要处理随机事件、校园动态和月终插曲。\n现在，去处理你的第一件烂摊子吧。",
+      target: "#startMonthButtonInBar"
     }
   ];
 
@@ -212,7 +214,7 @@
       })
       .join("");
 
-    $("#slackRemaining").textContent = `${state.slackRemaining} / 2`;
+    $("#slackRemaining").textContent = `${state.slackRemaining} / ${state.slackMax || 2}`;
     $("#slackActions").innerHTML = GameEngine.getSlackItems()
       .map((item) => {
         const disabled = !["planning", "events"].includes(state.phase) || state.gameOver || state.slackRemaining <= 0;
@@ -245,10 +247,26 @@
       })
       .join("");
     $("#actionCount").textContent = `已选 ${state.selectedActions.length} / ${state.maxActions}`;
-    const ready = canStartMonth();
-    $("#startMonthButton").disabled = state.phase !== "planning" || !!state.gameOver;
+    renderStartControls();
+  }
+
+  /**
+   * 「进入本月」在顶栏和底部操作条各有一个入口，
+   * 两处必须共享同一套禁用规则与提示文案。
+   */
+  function renderStartControls() {
+    const locked = state.phase !== "planning" || Boolean(state.gameOver);
+    const hint = getPlanHint();
+    $("#startMonthButton").disabled = locked;
     $("#startMonthButton").textContent = "进入本月";
-    $("#planHint").textContent = getPlanHint();
+    $("#planHint").textContent = hint;
+    const barButton = $("#startMonthButtonInBar");
+    if (barButton) {
+      barButton.disabled = locked;
+      barButton.textContent = "进入本月";
+    }
+    const barHint = $("#monthStartHint");
+    if (barHint) barHint.textContent = hint;
   }
 
   function renderMonthBrief() {
@@ -292,7 +310,7 @@
             <article class="focus-card problem-card">
               <div class="focus-card-head">
                 <div>
-                  <strong>${escapeHtml(student.name)}</strong>
+                  <strong class="focus-student-name">${escapeHtml(student.name)}</strong>
                   <span class="issue-title">${escapeHtml(problem.title)}</span>
                 </div>
                 <span class="issue-risk">${problem.carryOver ? "上月未解决 · " : ""}风险 ${student.risk}</span>
@@ -371,7 +389,9 @@
     }
 
     const remaining = state.eventQueue.length;
-    const eventLabel = current.isMonthEnd ? "月终事件" : current.category;
+    // 月终事件走独立的 monthEvent 相位（见 renderMonthEvent），
+    // 因此事件队列里不会再出现 isMonthEnd 的条目。
+    const eventLabel = current.category;
     container.innerHTML = `
       <article class="event-card">
         <div class="event-meta">
@@ -853,8 +873,9 @@
   function switchTab(tabName) {
     $$(".tab-button").forEach((button) => button.classList.toggle("active", button.dataset.tab === tabName));
     $$(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `${tabName}Tab`));
+    // 设计文档 §4：工作 / 学生 / 发展 三页底部共用「开始本月」操作条。
     const startBar = $("#monthStartBar");
-    if (startBar) startBar.classList.toggle("hidden", tabName === "event");
+    if (startBar) startBar.classList.toggle("hidden", !["work", "student", "develop"].includes(tabName));
   }
 
   function showToast(message) {
@@ -869,12 +890,126 @@
     $$(".tutorial-highlight").forEach((element) => element.classList.remove("tutorial-highlight"));
   }
 
+  function stopTutorialTracking() {
+    window.clearInterval(showTutorialStep._tracker);
+    showTutorialStep._tracker = null;
+    window.removeEventListener("resize", showTutorialStep._onResize || (() => {}));
+    window.removeEventListener("scroll", showTutorialStep._onResize || (() => {}), true);
+  }
+
+  /**
+   * 计算引导蒙版与卡片的最终位置。
+   *
+   * 原实现只在挂载后 30ms 量一次尺寸，且把卡片硬贴在目标右侧 12px，
+   * 于是：目标离屏时挖空跑到屏幕外、宽目标（时间线/顶部按钮）把卡片顶到边缘、
+   * 滚动或改窗口大小后位置全部失效。这里改成：
+   *   - 每帧重新测量，方向按可用空间选择，坐标夹进视口
+   *   - 无目标时收起挖空，只显示居中的卡片
+   */
+  function positionTutorialStep(step) {
+    const overlay = $("#tutorialOverlay");
+    if (!overlay) return { finish: true };
+    const card = overlay.querySelector(".tutorial-card");
+    const spotlight = overlay.querySelector(".tutorial-spotlight");
+    if (!card || !spotlight) return { finish: true };
+
+    const pad = 10;
+    const margin = 16;
+    const gap = 14;
+    const cardRect = card.getBoundingClientRect();
+
+    const target = step.target ? $(step.target) : null;
+    if (!target) {
+      // 没有目标：挖空缩成 1px 并隐藏（否则 9999px 的扩散阴影会压出一圈奇怪的暗环）。
+      spotlight.style.opacity = "0";
+      spotlight.style.left = "50%";
+      spotlight.style.top = "50%";
+      spotlight.style.width = "1px";
+      spotlight.style.height = "1px";
+      return { card: { left: Math.round((window.innerWidth - cardRect.width) / 2), top: Math.round((window.innerHeight - cardRect.height) / 2) } };
+    }
+
+    const rect = target.getBoundingClientRect();
+    spotlight.style.opacity = "1";
+    spotlight.style.left = `${Math.round(rect.left - pad)}px`;
+    spotlight.style.top = `${Math.round(rect.top - pad)}px`;
+    spotlight.style.width = `${Math.round(rect.width + pad * 2)}px`;
+    spotlight.style.height = `${Math.round(rect.height + pad * 2)}px`;
+
+    // 在若干个候选位置里挑「与目标重叠面积最小」的那个，而不是简单地在
+    // 右/左/下/上里取第一个放得下的。目标常常比视口还高（整块面板、时间线），
+    // 这时贴在旁边必然压住目标，宁可贴到视口角上。
+    const clampLeft = (value) => clampNumber(value, margin, window.innerWidth - cardRect.width - margin);
+    const clampTop = (value) => clampNumber(value, margin, window.innerHeight - cardRect.height - margin);
+    const centeredLeft = rect.left + rect.width / 2 - cardRect.width / 2;
+
+    const candidates = [
+      { left: centeredLeft, top: rect.bottom + gap },
+      { left: centeredLeft, top: rect.top - gap - cardRect.height },
+      { left: rect.right + gap, top: rect.top + rect.height / 2 - cardRect.height / 2 },
+      { left: rect.left - gap - cardRect.width, top: rect.top + rect.height / 2 - cardRect.height / 2 },
+      { left: centeredLeft, top: (window.innerHeight - cardRect.height) / 2 },
+      { left: margin, top: margin },
+      { left: window.innerWidth - cardRect.width - margin, top: margin },
+      { left: margin, top: window.innerHeight - cardRect.height - margin },
+      { left: window.innerWidth - cardRect.width - margin, top: window.innerHeight - cardRect.height - margin }
+    ];
+
+    // 用元素原始矩形评分（而不是放大后的挖空框）：卡片紧贴元素边缘时，
+    // 与挖空框相差的只是 10px 描边，不该被算成「遮挡」。
+    const cardArea = Math.max(1, cardRect.width * cardRect.height);
+    // 目标中心：用来衡量候选位置「离被介绍的东西有多远」。
+    const targetCenterX = rect.left + rect.width / 2;
+    const targetCenterY = rect.top + rect.height / 2;
+
+    let best = null;
+    candidates.forEach((candidate, index) => {
+      const box = {
+        left: clampLeft(candidate.left),
+        top: clampTop(candidate.top),
+        width: cardRect.width,
+        height: cardRect.height
+      };
+      const overlapX = Math.max(0, Math.min(box.left + box.width, rect.right) - Math.max(box.left, rect.left));
+      const overlapY = Math.max(0, Math.min(box.top + box.height, rect.bottom) - Math.max(box.top, rect.top));
+      const overlap = overlapX * overlapY;
+
+      // 词法序目标，依次为：
+      //   1. 卡片不能被视口裁切（最重要——半张卡在屏幕外就是坏掉了）
+      //   2. 尽量不压住被介绍的元素
+      //   3. 尽量待在目标附近（否则会「为了不遮挡」被甩到视口角落，观感更差）
+      //   4. 候选顺序（贴着目标的几个优先）
+      const outsideX = Math.max(0, -box.left) + Math.max(0, box.left + box.width - window.innerWidth);
+      const outsideY = Math.max(0, -box.top) + Math.max(0, box.top + box.height - window.innerHeight);
+      const outside = outsideX + outsideY;
+
+      const centerX = box.left + cardRect.width / 2;
+      const centerY = box.top + cardRect.height / 2;
+      const distance = Math.hypot(centerX - targetCenterX, centerY - targetCenterY);
+
+      const score =
+        (outside > 0 ? 1 : 0) * 1e9 +
+        (overlap / cardArea) * 1e6 +
+        distance * 10 +
+        index;
+      if (!best || score < best.score) best = { score, box, outside, overlap, distance, index };
+    });
+
+    return { card: { left: Math.round(best.box.left), top: Math.round(best.box.top) } };
+  }
+
+  function clampNumber(value, min, max) {
+    if (max < min) return min;
+    return Math.max(min, Math.min(max, value));
+  }
+
   function showTutorialStep(index) {
     const overlay = $("#tutorialOverlay");
     if (!overlay) return;
     const step = tutorialSteps[index];
     if (!step) return;
 
+    stopTutorialTracking();
     clearTutorialHighlight();
     if (step.tab) switchTab(step.tab);
 
@@ -895,42 +1030,53 @@
 
     const card = overlay.querySelector(".tutorial-card");
     const spotlight = overlay.querySelector(".tutorial-spotlight");
+    const target = step.target ? $(step.target) : null;
+
+    // 起点放在视口中心，随后的第一次定位会产生一段轻微的移动过渡，
+    // 避免卡片在每一步之间「瞬移」。
     card.classList.remove("anchored");
     card.style.left = "50%";
     card.style.top = "50%";
-    card.style.right = "auto";
-    card.style.bottom = "auto";
     card.style.transform = "translate(-50%, -50%)";
+    spotlight.style.opacity = "0";
 
-    window.setTimeout(() => {
-      if (step.target) {
-        const target = $(step.target);
-        if (target) {
-          target.classList.add("tutorial-highlight");
-          const rect = target.getBoundingClientRect();
-          const cardRect = card.getBoundingClientRect();
-          let left = rect.right + 16;
-          if (left + cardRect.width > window.innerWidth - 16) {
-            left = Math.max(16, rect.left - cardRect.width - 16);
-          }
-          const top = Math.max(16, Math.min(window.innerHeight - cardRect.height - 16, rect.top + 12));
-          const pad = 10;
-          spotlight.style.left = `${rect.left - pad}px`;
-          spotlight.style.top = `${rect.top - pad}px`;
-          spotlight.style.width = `${rect.width + pad * 2}px`;
-          spotlight.style.height = `${rect.height + pad * 2}px`;
-          card.classList.add("anchored");
-          card.style.left = `${left}px`;
-          card.style.top = `${top}px`;
-          card.style.transform = "none";
-        }
-      } else {
-        spotlight.style.left = "50%";
-        spotlight.style.top = "50%";
-        spotlight.style.width = "1px";
-        spotlight.style.height = "1px";
+    if (target) {
+      // 目标可能在视口外（小屏时时间线在下方、面板被折叠）。
+      // behavior:smooth 在无头/低性能环境下可能不触发 scroll 事件，所以下面用轮询兜底。
+      try {
+        target.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+      } catch {
+        target.scrollIntoView();
       }
-    }, 30);
+      target.classList.add("tutorial-highlight");
+    }
+
+    const apply = (settle) => {
+      const placement = positionTutorialStep(step);
+      if (placement.finish) return;
+      if (settle) {
+        card.classList.add("anchored");
+        card.style.transform = "none";
+      }
+      card.style.left = `${placement.card.left}px`;
+      card.style.top = `${placement.card.top}px`;
+    };
+
+    // 先居中显示内容，下一帧再移动到位，从而拿到过渡动画。
+    requestAnimationFrame(() => apply(false));
+    window.setTimeout(() => apply(true), 20);
+
+    // 平滑滚动期间持续跟随，直到位置稳定（或超时）。
+    let trackCount = 0;
+    showTutorialStep._tracker = window.setInterval(() => {
+      trackCount += 1;
+      apply(true);
+      if (trackCount > 40) stopTutorialTracking();
+    }, 50);
+
+    showTutorialStep._onResize = () => apply(true);
+    window.addEventListener("resize", showTutorialStep._onResize);
+    window.addEventListener("scroll", showTutorialStep._onResize, true);
 
     $("#tutorialPrevButton").addEventListener("click", () => {
       tutorialIndex = Math.max(0, tutorialIndex - 1);
@@ -960,6 +1106,7 @@
   }
 
   function finishTutorial() {
+    stopTutorialTracking();
     const overlay = $("#tutorialOverlay");
     if (overlay) overlay.remove();
     clearTutorialHighlight();
@@ -1016,7 +1163,18 @@
       $("#startStep1").classList.remove("hidden");
       hideStartScreen();
       render();
-      switchTab(state.phase === "events" ? "event" : "work");
+      // 相位 → 默认标签页：事件与月终流程落在事件页，其余落在工作页。
+      const tabByPhase = {
+        events: "event",
+        monthEvent: "event",
+        monthSummary: "event",
+        semesterSummary: "work",
+        semesterStart: "work",
+        gameOver: "work",
+        planning: "work"
+      };
+      switchTab(tabByPhase[state.phase] || "work");
+      renderStartControls();
       showToast("已读取存档。");
       if (!hasCompletedTutorial()) window.setTimeout(startTutorial, 80);
     });
@@ -1101,7 +1259,7 @@
       }
     });
 
-    $("#startMonthButton").addEventListener("click", () => {
+    const handleStartMonth = () => {
       if (!canStartMonth()) {
         const missing = [];
         if (state.selectedActions.length < state.minWorkActions) missing.push(`重点工作 ${state.selectedActions.length}/${state.minWorkActions}`);
@@ -1123,7 +1281,11 @@
         render();
         showToast("本月已经开始，事件正在等待处理。");
       }
-    });
+    };
+
+    $("#startMonthButton").addEventListener("click", handleStartMonth);
+    const barStart = $("#startMonthButtonInBar");
+    if (barStart) barStart.addEventListener("click", handleStartMonth);
 
     $("#problemStudents").addEventListener("click", (event) => {
       const button = event.target.closest("[data-student-id][data-method-index]");
@@ -1162,6 +1324,13 @@
     });
 
     $("#saveButton").addEventListener("click", () => {
+      if (!GameEngine.canSaveState(state)) {
+        const reason = state.gameOver
+          ? "已经走到结局，无法再保存。"
+          : "本月已经结算，请先完成弹窗流程再保存。";
+        showToast(reason);
+        return;
+      }
       GameEngine.saveState(state);
       hasSavedGame = true;
       $("#continueGameButton").hidden = false;
@@ -1191,6 +1360,17 @@
     renderEvent();
     renderDevelop();
     renderTimeline();
+    // 相位恢复：overlay 型流程必须按 phase 统一重建，
+    // 否则读档后会停在一个「主体界面不可操作 + 没有弹窗」的死角。
+    restorePhase();
+  }
+
+  /**
+   * P0-3：把散落各处的 overlay 渲染收敛成一个相位分派器。
+   * 每个 render*Overlay 函数内部都会自己判断该不该显示，
+   * 所以这里只需按顺序调用，多余的会自行清理。
+   */
+  function restorePhase() {
     renderGameOver();
     renderMonthEvent();
     renderMonthSummary();
@@ -1204,4 +1384,9 @@
     render();
     showStartScreen();
   });
+
+  // 只读调试钩子：供浏览器冒烟测试与人工排查相位问题使用，不暴露可写状态。
+  window.__dshPhase = () => state.phase;
+  window.__dshState = () => JSON.parse(JSON.stringify(state));
+  window.__dshCanSave = () => GameEngine.canSaveState(state);
 })();
