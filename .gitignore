@@ -8,6 +8,9 @@ __pycache__/
 .venv/
 venv/
 
+# 本地历史备份（非项目内容）
+.git_backup_*/
+
 # Node
 node_modules/
 
