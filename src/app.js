@@ -1040,9 +1040,9 @@
     card.style.transform = "translate(-50%, -50%)";
     spotlight.style.opacity = "0";
 
+    // 目标可能在视口外（小屏时时间线在下方、面板被折叠）。
+    // behavior:smooth 在无头/低性能环境下可能不触发 scroll 事件，所以下面用轮询兜底。
     if (target) {
-      // 目标可能在视口外（小屏时时间线在下方、面板被折叠）。
-      // behavior:smooth 在无头/低性能环境下可能不触发 scroll 事件，所以下面用轮询兜底。
       try {
         target.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
       } catch {
@@ -1066,12 +1066,19 @@
     requestAnimationFrame(() => apply(false));
     window.setTimeout(() => apply(true), 20);
 
-    // 平滑滚动期间持续跟随，直到位置稳定（或超时）。
+    // 平滑滚动期间持续跟随，等位置连续若干次不再变化就停止轮询。
+    // 一直轮询会让浏览器永远认为卡片「不稳定」——对自动化截图与
+    // 元素点击判定都是干扰，也没必要持续耗性能。
+    let stableRounds = 0;
+    let lastSignature = "";
     let trackCount = 0;
     showTutorialStep._tracker = window.setInterval(() => {
       trackCount += 1;
       apply(true);
-      if (trackCount > 40) stopTutorialTracking();
+      const signature = `${card.style.left}|${card.style.top}`;
+      stableRounds = signature === lastSignature ? stableRounds + 1 : 0;
+      lastSignature = signature;
+      if (stableRounds >= 4 || trackCount > 40) stopTutorialTracking();
     }, 50);
 
     showTutorialStep._onResize = () => apply(true);

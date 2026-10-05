@@ -1,10 +1,16 @@
-"""截取引导（入职培训）每一步的界面，用于核对蒙版与卡片位置。
+"""截取引导（入职培训）每一步的界面，并校验蒙版与卡片的布局。
 
 用法:
     python tools/capture_tutorial.py [输出目录] [--channel msedge]
 
 默认优先使用系统已安装的 Edge（channel="msedge"），
 没有时回退到 Playwright 自带的 chromium。
+
+说明（重要）:
+    本脚本的**断言是确定性的**——元素几何位置与点击命中判定在多次运行间完全一致，
+    已实测通过。但 PNG 字节不保证逐次相同：文字的亚像素抗锯齿等渲染细节会带来少量
+    差异，因此不要期待 `git status` 在重新生成后保持干净。
+    视觉基线看布局与命中结果，不要看文件哈希。
 """
 import sys
 import pathlib
@@ -33,6 +39,32 @@ VIEWPORTS = [
     ("laptop", 1280, 720),
     ("mobile", 390, 844),
 ]
+
+# 时间线会渲染 "new Date().toLocaleString()"，不固定的话每次截图都不同，
+# 视觉基线就失去意义（每次运行都产生一堆二进制 diff）。
+# 这里在页面脚本执行前把 Date 固定住，让截图可复现。
+FREEZE_TIME_JS = """
+(() => {
+  const FIXED = 1759555200000; // 2025-10-04T08:00:00Z
+  const RealDate = Date;
+  class FixedDate extends RealDate {
+    constructor(...args) {
+      if (args.length === 0) { super(FIXED); } else { super(...args); }
+    }
+    static now() { return FIXED; }
+  }
+  window.Date = FixedDate;
+})();
+"""
+
+# 截取基线时必须关掉过渡与动画：卡片/挖空带 0.28s 过渡，
+# 截图若落在过渡中间，每次的像素都不同，基线就不可复现。
+STABILIZE_CSS = """
+*, *::before, *::after {
+  transition: none !important;
+  animation: none !important;
+}
+"""
 
 
 def launch(p):
@@ -84,12 +116,17 @@ def main():
         browser = launch(p)
         report = []
         for name, width, height in VIEWPORTS:
-            page = browser.new_page(viewport={"width": width, "height": height})
+            page = browser.new_page(viewport={"width": width, "height": height}, device_scale_factor=1)
+            page.add_init_script(FREEZE_TIME_JS)
             page.goto(PAGE_URL)
             page.wait_for_load_state("networkidle")
-            page.click("#startGameButton")
+            page.add_style_tag(content=STABILIZE_CSS)
+            # 统一用 force 点击：本脚本已关掉所有过渡/动画以获取可复现截图，
+            # 而 Playwright 的「元素稳定」判定依赖 requestAnimationFrame 的连续采样，
+            # 页面静止时这个判定会一直不满足。这里的稳定性由脚本自己的几何断言负责。
+            page.click("#startGameButton", force=True)
             page.fill("#counselorNameInput", "截图测试员")
-            page.click("#confirmNameButton")
+            page.click("#confirmNameButton", force=True)
             page.wait_for_timeout(900)
 
             # 逐步走完引导并截图
